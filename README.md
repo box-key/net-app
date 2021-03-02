@@ -25,6 +25,8 @@ The languages we currently support:
 
 GUI provides a tool to easily and visually compare outputs across the `Transformer` and the `Phonetisaurus` with different beam sizes. It shows predicted sequence(s) along with the probability of each sequence. 
 
+Link: https://boxkey.me
+
 ## API
 
 ReproNETs provide a public API that provides transliteration as a service via simple HTTP request. 
