@@ -1,6 +1,7 @@
 from flask import Flask, request
 from flask_restful import Resource, Api
 
+from pprint import pformat
 import logging
 import math
 
@@ -72,6 +73,66 @@ class TransformerNETransliterator(Resource):
             "status": 200,
             "message": "Successfully made predictions"
         }
+        return resp
+
+    def post(self):
+        data = request.get_json(force=True)
+        language = data.get("language", "")
+        beam_size = int(data.get("beam", 0))
+        batch = data.get("batch", [])
+        logger.debug("lan={} - beam={} - batch_len={}".format(
+            language, beam_size, len(batch)
+        ))
+        if beam_size <= 0:
+            resp = {
+                "status": 400,
+                "message": ("Beam size must be grater than 0, instead "
+                            "received = '{}'".format(beam_size))
+            }
+            return resp
+        if len(batch) == 0:
+            resp = {
+                "status": 400,
+                "message": "Received an empty batch."
+            }
+            return resp
+        if language not in self.net_models:
+            resp = {
+                "status": 400,
+                "message": "language = '{}' is not supported".format(language)
+            }
+            return resp
+        else:
+            translator = self.net_models[language]
+        # TODO: compare the throughput of single prediction vs batch prediction
+        results = []
+        num_bad_samples = 0
+        for sample in batch:
+            source = sample['src']
+            source = source.lower().replace(" ", "")
+            if (len(source) == 0) or (len(source) > 37):
+                num_bad_samples += 1
+                output = "ILLEGAL input"
+            else:
+                prediction = translator.translate_batch([list(source)],
+                                                        beam_size=beam_size,
+                                                        num_hypotheses=beam_size,
+                                                        return_scores=True)
+                output = self.format_output(prediction[0])
+            results.append({'output': output, 'idx': sample['idx']})
+        if num_bad_samples == 0:
+            resp = {
+                "data": results,
+                "status": 200,
+                "message": "Successfully made predictions for all samples."
+            }
+        else:
+            resp = {
+                "data": results,
+                "status": 200,
+                "message": ("Successfully made predictions, but received '{}' "
+                            "bad inputs".format(num_bad_samples))
+            }
         return resp
 
 
