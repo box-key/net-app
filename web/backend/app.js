@@ -6,12 +6,13 @@ const bodyParser = require('body-parser')
 
 async function startServer() {
   const app = express();
-  app.use(bodyParser.urlencoded({ extended: false }))
-  app.use(bodyParser.json())
+ 
+  app.use(bodyParser.urlencoded({ extended: false, limit: '20mb' }));
+  app.use(bodyParser.json({ limit: '20mb' }));
 
-  app.get('/', (req, res) => res.send('Hello World!'))
+  app.get('/', (req, res) => res.send('Hello World!'));
 
-  app.use('/predict', predict_route())
+  app.use('/predict', predict_route());
 
   app.listen(config.port, () => {
     console.log(`
