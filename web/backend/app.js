@@ -14,7 +14,7 @@ async function startServer() {
 
   app.use('/predict', predict_route());
 
-  app.listen(config.port, () => {
+  let server = app.listen(config.port, () => {
     console.log(`
       #############################################
          Server listening on port: ${config.port}
@@ -24,6 +24,8 @@ async function startServer() {
     logger.error(err);
     process.exit(1);
   });
+
+  server.setTimeout(config.timeout);
 
 }
 
