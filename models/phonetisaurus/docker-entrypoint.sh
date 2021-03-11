@@ -1,3 +1,7 @@
 #!/bin/sh
 
-gunicorn --chdir /phonetisaurus/models/phonetisaurus wsgi:app -w 2 -b 0.0.0.0:5001
+gunicorn --chdir /phonetisaurus/models/phonetisaurus wsgi:app \
+	--workers 2 \
+	--bind 0.0.0.0:5001 \
+	--timeout 300
+

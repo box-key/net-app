@@ -1,3 +1,6 @@
 #!/bin/sh
 
-gunicorn --chdir /transformer/models/transformer wsgi:app -w 2 -b 0.0.0.0:5002
+gunicorn --chdir /transformer/models/transformer wsgi:app \
+	--workers 2 \
+	--bind 0.0.0.0:5002 \
+	--timeout 300
