@@ -79,7 +79,7 @@ curl --request GET   \
 ```
 
 ## POST
-This is mainly used for a batch prediction.
+This is mainly used for a batch prediction. (This is an experiment feature)
 
 ### Request
 
